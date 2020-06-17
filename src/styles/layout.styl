@@ -1,0 +1,38 @@
+
+#header {
+    position: fixed;
+    width: 100%;
+    height: header-height;
+    line-height: header-height;
+    padding: 0 25px;
+    background-color: #fff;
+    word-break: keep-all;
+    white-space: nowrap;
+
+    #header-inner {
+        display: flex;
+        align-items: center;
+
+        #logo {
+            padding: 0 6px;
+            display: flex;
+            align-items: center;
+            color: #000;
+            font-size: 22px;
+
+            img {
+                width: 40px;
+                height: 40px;
+                margin-right: 6px;
+            }
+        }
+    }
+}
+
+#main {
+    background: #fff;
+    overflow-y: auto;
+    margin-top: header-height;
+    padding: 10px 35px 30px;
+    height: 'calc(100vh - %s - 4px)' % header-height;
+}
