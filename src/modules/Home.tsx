@@ -70,7 +70,7 @@ const Home: FC<Props> = () => {
         <Button
           type='primary'
           ghost
-          style={{ color: "#4aa261", borderColor: "#4aa261" }}
+          style={{ color: "green", borderColor: "green" }}
           onClick={() => handleFreeDrawing(1)}>
           <EditOutlined /> Draw Foreground
         </Button>
@@ -78,7 +78,7 @@ const Home: FC<Props> = () => {
         <Button
           type='primary'
           ghost
-          style={{ color: "#ff4d4f", borderColor: "#ff4d4f" }}
+          style={{ color: "red", borderColor: "red" }}
           onClick={() => handleFreeDrawing(0)}>
           <EditOutlined /> Draw background
         </Button>
