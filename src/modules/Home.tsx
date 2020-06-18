@@ -10,6 +10,7 @@ import {
   EditOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
+import slicAlgorithm from "../utils/SLICAlgorithm";
 
 type Props = {};
 const Home: FC<Props> = () => {
@@ -39,6 +40,12 @@ const Home: FC<Props> = () => {
       .getContext()
       .getImageData(0, 0, canvasInput!.getWidth(), canvasInput!.getHeight());
     console.log(data);
+    slicAlgorithm(data, {
+      regionSize: 40,
+      callback: ({ indexMap }) => {
+        console.log(indexMap);
+      },
+    });
   };
 
   const handleFreeDrawing = (mode: 1 | 0) => {
