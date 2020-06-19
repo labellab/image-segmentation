@@ -1,8 +1,8 @@
 export const setCanvasImage = ({ img, canvas }: { img: fabric.Image; canvas: fabric.Canvas }) => {
   let { clientWidth, clientHeight } = document.querySelector(".canvas-card")!;
 
-  clientWidth = clientWidth - 20;
-  clientHeight = clientHeight - 20;
+  clientWidth = clientWidth;
+  clientHeight = clientHeight;
 
   let drawWidth = 0;
   let drawHeight = 0;
@@ -20,7 +20,7 @@ export const setCanvasImage = ({ img, canvas }: { img: fabric.Image; canvas: fab
   img.scaleToWidth(drawWidth);
   img.scaleToHeight(drawHeight);
 
-  //   canvas.add(img);
+  // canvas.add(img);
   canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
   canvas.renderAll();
 };

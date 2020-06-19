@@ -13,6 +13,25 @@ import {
 import slicAlgorithm from "../utils/SLICAlgorithm";
 
 type Props = {};
+type SLICResult = {
+  width: number;
+  height: number;
+  indexMap: Int32Array;
+  rgbData: Uint8Array;
+  segments: {
+    [pixel: number]: {
+      mask: any;
+      count: number;
+      mp: [number, number, number];
+      red: Uint32Array;
+      green: Uint32Array;
+      blue: Uint32Array;
+      edges?: {
+        [k: number]: number;
+      };
+    };
+  };
+};
 const Home: FC<Props> = () => {
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [canvasInput, setCanvasInput] = useState<fabric.Canvas | null>(null);
@@ -35,66 +54,46 @@ const Home: FC<Props> = () => {
     },
   };
 
-  const callbackSegmentation = (res: {
-    width: number;
-    height: number;
-    size: number;
-    indexMap: Int32Array;
-    rgbData: Uint8Array;
-  }) => {
-    const { indexMap, width, height, rgbData } = res;
-    const segments: {
-      [pixel: number]: {
-        mask: any;
-        count: number;
-        mp: [number, number, number];
-        red: Uint32Array;
-        green: Uint32Array;
-        blue: Uint32Array;
-        edges?: {
-          [k: number]: number;
-        };
-      };
-    } = {};
+  const callbackSegmentation = (res: SLICResult): SLICResult => {
+    const { indexMap, width, height, rgbData, segments } = res;
 
-    const numPixels = indexMap.length;
-    for (let i = 0; i < numPixels; i += 1) {
+    for (let i = 0; i < indexMap.length; i += 1) {
       const current = indexMap[i];
-      console.log("🔥", current);
-      // if (!segments.hasOwnProperty(current)) {
-      //   segments[current] = {
-      //     mask: { b: 0, f: 0 },
-      //     count: 0,
-      //     mp: [0, 0, 0],
-      //     red: new Uint32Array(256),
-      //     green: new Uint32Array(256),
-      //     blue: new Uint32Array(256),
-      //   };
-      // }
+      if (!segments.hasOwnProperty(current)) {
+        segments[current] = {
+          mask: { b: 0, f: 0 },
+          count: 0,
+          mp: [0, 0, 0],
+          red: new Uint32Array(256),
+          green: new Uint32Array(256),
+          blue: new Uint32Array(256),
+        };
+      }
 
-      // const y = ~~(i / width),
-      //   x = i % width;
-      // segments[current].count += 1;
-      // segments[current].mp[0] += rgbData[4 * i];
-      // segments[current].mp[1] += rgbData[4 * i + 1];
-      // segments[current].mp[2] += rgbData[4 * i + 2];
-      // segments[current].red[rgbData[4 * i]] += 1;
-      // segments[current].green[rgbData[4 * i + 1]] += 1;
-      // segments[current].blue[rgbData[4 * i + 2]] += 1;
+      const y = ~~(i / width),
+        x = i % width;
+      segments[current].count += 1;
+      segments[current].mp[0] += rgbData[4 * i];
+      segments[current].mp[1] += rgbData[4 * i + 1];
+      segments[current].mp[2] += rgbData[4 * i + 2];
+      segments[current].red[rgbData[4 * i]] += 1;
+      segments[current].green[rgbData[4 * i + 1]] += 1;
+      segments[current].blue[rgbData[4 * i + 2]] += 1;
 
-      // Object.keys(segments).forEach((key) => {
-      //   const s = +key;
+      // //@ts-ignore
+      // for (const _s in segments) {
+      //   const s = +_s;
       //   segments[s].mp[0] = segments[s].mp[0] / segments[s].count;
       //   segments[s].mp[1] = segments[s].mp[1] / segments[s].count;
       //   segments[s].mp[2] = segments[s].mp[2] / segments[s].count;
       //   segments[s].edges = {};
-      //   Object.keys(segments).forEach((key2) => {
-      //     const k = +key2;
+      //   for (const _k in segments) {
+      //     const k = +_k;
       //     if (s !== k) {
       //       segments[s].edges![k] = 1.0;
       //     }
-      //   });
-      // });
+      //   }
+      // }
     }
     return { ...res, segments };
   };
@@ -103,11 +102,38 @@ const Home: FC<Props> = () => {
     const data = canvasInput!
       .getContext()
       .getImageData(0, 0, canvasInput!.getWidth(), canvasInput!.getHeight());
-    console.log(data);
-    const result = slicAlgorithm(data, {
-      regionSize: 40,
+
+    const result = callbackSegmentation({
+      ...slicAlgorithm(data, {
+        regionSize: 30,
+      }),
+      segments: {},
     });
-    // console.log(callbackSegmentation(result));
+    console.log(result);
+    renderSuperpixels(result);
+  };
+
+  const renderSuperpixels = (result: SLICResult) => {
+    console.log(result);
+    const context = canvasOutput!.getContext();
+    const imageData = context.createImageData(canvasOutput!.getWidth(), canvasOutput!.getHeight());
+    const data = imageData.data;
+    let seg;
+    for (let i = 0; i < result.indexMap.length; ++i) {
+      seg = result.segments[result.indexMap[i]];
+      data[4 * i + 3] = 255;
+      if (result.indexMap[i] == result.indexMap[i + 1]) {
+        data[4 * i + 0] = seg.mp[0];
+        data[4 * i + 1] = seg.mp[1];
+        data[4 * i + 2] = seg.mp[2];
+      } else {
+        data[4 * i + 0] = 0;
+        data[4 * i + 1] = 0;
+        data[4 * i + 2] = 0;
+      }
+    }
+    console.log(data);
+    context.putImageData(imageData, 0, 0);
   };
 
   const handleFreeDrawing = (mode: 1 | 0) => {
@@ -164,7 +190,7 @@ const Home: FC<Props> = () => {
       </div>
       <div className='canvas-stage'>
         <CanvasInput canvas={canvasInput} imageURL={imageURL} isDrawing={isDrawingMode} />
-        <CanvasOutput canvas={canvasInput} imageURL={imageURL} />
+        <CanvasOutput canvas={canvasOutput} />
       </div>
     </>
   );
