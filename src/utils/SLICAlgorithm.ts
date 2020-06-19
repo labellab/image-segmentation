@@ -1,30 +1,30 @@
-export default function (imageData: ImageData, options: Options) {
+export default function (
+  imageData: ImageData,
+  options: Options
+): {
+  width: number;
+  height: number;
+  size: number;
+  indexMap: Int32Array;
+  rgbData: Uint8Array;
+} {
   options.regionSize = ~~options.regionSize;
 
   const segmentation = computeSLICSegmentation(imageData, options);
   const numSegments = remapLabels(segmentation);
 
-  if (options.callback) {
-    var rgbData = new Uint8Array(imageData.data);
-    options.callback({
-      width: imageData.width,
-      height: imageData.height,
-      size: numSegments,
-      indexMap: segmentation,
-      rgbData: rgbData,
-    });
-  }
+  var rgbData = new Uint8Array(imageData.data);
+  return {
+    width: imageData.width,
+    height: imageData.height,
+    size: numSegments,
+    indexMap: segmentation,
+    rgbData: rgbData,
+  };
 }
 
 type Options = {
   regionSize: number;
-  callback: (obj: {
-    width: number;
-    height: number;
-    size: number;
-    indexMap: Int32Array;
-    rgbData: Uint8Array;
-  }) => void;
 };
 
 /**
