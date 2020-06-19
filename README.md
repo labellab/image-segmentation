@@ -2,7 +2,7 @@
 
 This project perform image segmention in JavaScript using SLIC superpixels. Learn more about [SLIC Superpixels](https://www.iro.umontreal.ca/~mignotte/IFT6150/Articles/SLIC_Superpixels.pdf).
 
-![](https://zjr-github.oss-cn-shenzhen.aliyuncs.com/zoranx.me/SLIC%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2/WechatIMG451.jpg)
+![](intro.jpg)
 
 ## How to develop locally?
 
