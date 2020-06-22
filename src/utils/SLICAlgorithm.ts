@@ -157,15 +157,15 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
   const minRegionSize = 20;
   eliminateSmallRegions(segmentation, minRegionSize, numPixels, imageData.width, imageData.height);
 
-  console.log(`
-    图宽：${imageData.width}
-    图高：${imageData.height}
-    超像素大小 regionSize：${options.regionSize}
-    超像素区域数 numRegions：${numRegions}
-    总像素：${imageData.width * imageData.height}
-  `);
-  console.log(`labData`, labData);
-  console.log(`edgeMap`, edgeMap);
+  // console.log(`
+  //   图宽：${imageData.width}
+  //   图高：${imageData.height}
+  //   超像素大小 regionSize：${options.regionSize}
+  //   超像素区域数 numRegions：${numRegions}
+  //   总像素：${imageData.width * imageData.height}
+  // `);
+  // console.log(`labData`, labData);
+  // console.log(`edgeMap`, edgeMap);
 
   return segmentation;
 }
@@ -277,10 +277,10 @@ function computeCenters(
   h: number
 ) {
   let region: number = 0;
-  for (let y = 0; y < h; y += 1) {
-    for (let x = 0; x < w; x += 1) {
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
       region = segmentation[y * w + x];
-      masses[region] += 1;
+      masses[region]++;
       centers[region * 5] += x;
       centers[region * 5 + 1] += y;
       centers[region * 5 + 2] += labData[y * w + x];
@@ -288,7 +288,7 @@ function computeCenters(
       centers[region * 5 + 4] += labData[2 * w * h + y * w + x];
     }
   }
-  for (region = 0; region < numRegions; region += 1) {
+  for (region = 0; region < numRegions; region++) {
     const iMass = 1.0 / Math.max(masses[region], 1e-8);
     centers[region * 5] = centers[region * 5] * iMass;
     centers[region * 5 + 1] = centers[region * 5 + 1] * iMass;
@@ -313,14 +313,14 @@ function assignSuperpixelLabel(
   h: number
 ) {
   let x, y;
-  for (let i = 0; i < distanceMap.length; i += 1) {
+  for (let i = 0; i < distanceMap.length; ++i) {
     distanceMap[i] = Infinity;
   }
-  for (let region = 0; region < numRegionsX * numRegionsY; region += 1) {
+  for (let region = 0; region < numRegionsX * numRegionsY; ++region) {
     const cx = Math.round(centers[region * 5]);
     const cy = Math.round(centers[region * 5 + 1]);
-    for (y = Math.max(0, cy - regionSize); y < Math.min(h, cy + regionSize); y += 1) {
-      for (x = Math.max(0, cx - regionSize); x < Math.min(w, cx + regionSize); x += 1) {
+    for (y = Math.max(0, cy - regionSize); y < Math.min(h, cy + regionSize); ++y) {
+      for (x = Math.max(0, cx - regionSize); x < Math.min(w, cx + regionSize); ++x) {
         const spatial = (x - cx) * (x - cx) + (y - cy) * (y - cy),
           dL = labData[y * w + x] - centers[5 * region + 2],
           dA = labData[w * h + y * w + x] - centers[5 * region + 3],
@@ -358,12 +358,13 @@ function initializeKmeansCenters(
   w: number,
   h: number
 ) {
+  console.log(regionSize, numRegionsY, numRegionsX, w, h);
   let i = 0,
     j = 0,
     x,
     y;
-  for (let v = 0; v < numRegionsY; v += 1) {
-    for (let u = 0; u < numRegionsX; u += 1) {
+  for (let v = 0; v < numRegionsY; ++v) {
+    for (let u = 0; u < numRegionsX; ++u) {
       var centerx = 0,
         centery = 0,
         minEdgeValue = Infinity,
@@ -374,9 +375,8 @@ function initializeKmeansCenters(
       y = Math.round(regionSize * (v + 0.5));
       x = Math.max(Math.min(x, w - 1), 0);
       y = Math.max(Math.min(y, h - 1), 0);
-
-      for (yp = Math.max(0, y - 1); yp <= Math.min(h - 1, y + 1); yp += 1) {
-        for (xp = Math.max(0, x - 1); xp <= Math.min(w - 1, x + 1); xp += 1) {
+      for (yp = Math.max(0, y - 1); yp <= Math.min(h - 1, y + 1); yp++) {
+        for (xp = Math.max(0, x - 1); xp <= Math.min(w - 1, x + 1); xp++) {
           const edgeValue = edgeMap[yp * w + xp];
           if (edgeValue < minEdgeValue) {
             minEdgeValue = edgeValue;
