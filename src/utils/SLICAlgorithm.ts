@@ -129,7 +129,7 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
       imageData.width,
       imageData.height
     );
-    updateClusterParams(segmentation, mcMap, msMap, clusterParams);
+    // updateClusterParams(segmentation, mcMap, msMap, clusterParams);
     let j = 0;
     for (j = 0; j < masses.length; j += 1) {
       masses[j] = 0;
@@ -149,12 +149,11 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
 
     const error = computeResidualError(currentCenters, newCenters);
     if (error < 1e-5) break;
-    console.log("💧", error);
     for (j = 0; j < currentCenters.length; ++j) {
       currentCenters[j] = newCenters[j];
     }
   }
-  // const minRegionSize = options.regionSize ** 2 / 4;
+  // const minRegionSize = (options.regionSize * options.regionSize) / 4;
   const minRegionSize = 20;
   eliminateSmallRegions(segmentation, minRegionSize, numPixels, imageData.width, imageData.height);
 
@@ -171,26 +170,26 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
   return segmentation;
 }
 
-const updateClusterParams = (
-  segmentation: Int32Array,
-  mcMap: Float32Array,
-  msMap: Float32Array,
-  clusterParams: Float32Array
-) => {
-  let mc = new Float32Array(clusterParams.length / 2),
-    ms = new Float32Array(clusterParams.length / 2);
-  for (let i = 0; i < segmentation.length; i++) {
-    let region = segmentation[i];
-    if (mc[region] < mcMap[region]) {
-      mc[region] = mcMap[region];
-      clusterParams[region * 2 + 0] = mcMap[region];
-    }
-    if (ms[region] < msMap[region]) {
-      ms[region] = msMap[region];
-      clusterParams[region * 2 + 1] = msMap[region];
-    }
-  }
-};
+// const updateClusterParams = (
+//   segmentation: Int32Array,
+//   mcMap: Float32Array,
+//   msMap: Float32Array,
+//   clusterParams: Float32Array
+// ) => {
+//   let mc = new Float32Array(clusterParams.length / 2),
+//     ms = new Float32Array(clusterParams.length / 2);
+//   for (let i = 0; i < segmentation.length; i++) {
+//     let region = segmentation[i];
+//     if (mc[region] < mcMap[region]) {
+//       mc[region] = mcMap[region];
+//       clusterParams[region * 2 + 0] = mcMap[region];
+//     }
+//     if (ms[region] < msMap[region]) {
+//       ms[region] = msMap[region];
+//       clusterParams[region * 2 + 1] = msMap[region];
+//     }
+//   }
+// };
 
 function eliminateSmallRegions(
   segmentation: Int32Array,
@@ -322,29 +321,18 @@ function assignSuperpixelLabel(
     const cy = Math.round(centers[region * 5 + 1]);
     for (y = Math.max(0, cy - regionSize); y < Math.min(h, cy + regionSize); y += 1) {
       for (x = Math.max(0, cx - regionSize); x < Math.min(w, cx + regionSize); x += 1) {
-        const spatial = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2),
+        const spatial = (x - cx) * (x - cx) + (y - cy) * (y - cy),
           dL = labData[y * w + x] - centers[5 * region + 2],
           dA = labData[w * h + y * w + x] - centers[5 * region + 3],
           dB = labData[2 * w * h + y * w + x] - centers[5 * region + 4],
-          appearance = Math.sqrt(dL ** 2 + dA ** 2 + dB ** 2),
-          distance =
-            appearance + (clusterParams[region * 2] / clusterParams[region * 2 + 1]) * spatial;
+          appearance = dL * dL + dA * dA + dB * dB,
+          distance = Math.sqrt(
+            appearance / clusterParams[region * 2 + 0] + spatial / clusterParams[region * 2 + 1]
+          );
         if (distance < distanceMap[y * w + x]) {
           distanceMap[y * w + x] = distance;
           segmentation[y * w + x] = region;
         }
-        // const spatial = (x - cx) * (x - cx) + (y - cy) * (y - cy),
-        //   dL = labData[y * w + x] - centers[5 * region + 2],
-        //   dA = labData[w * h + y * w + x] - centers[5 * region + 3],
-        //   dB = labData[2 * w * h + y * w + x] - centers[5 * region + 4],
-        //   appearance = dL * dL + dA * dA + dB * dB,
-        //   distance = Math.sqrt(
-        //     appearance / clusterParams[region * 2 + 0] + spatial / clusterParams[region * 2 + 1]
-        //   );
-        // if (distance < distanceMap[y * w + x]) {
-        //   distanceMap[y * w + x] = distance;
-        //   segmentation[y * w + x] = region;
-        // }
       }
     }
   }

@@ -79,19 +79,15 @@ const Home: FC<Props> = () => {
       segments[current].red[rgbData[4 * i]] += 1;
       segments[current].green[rgbData[4 * i + 1]] += 1;
       segments[current].blue[rgbData[4 * i + 2]] += 1;
-
-      // //@ts-ignore
-      // for (const _s in segments) {
-      //   const s = +_s;
-      //   segments[s].mp[0] = segments[s].mp[0] / segments[s].count;
-      //   segments[s].mp[1] = segments[s].mp[1] / segments[s].count;
-      //   segments[s].mp[2] = segments[s].mp[2] / segments[s].count;
-      //   segments[s].edges = {};
-      //   for (const _k in segments) {
-      //     const k = +_k;
-      //     if (s !== k) {
-      //       segments[s].edges![k] = 1.0;
-      //     }
+    }
+    for (const s in segments) {
+      segments[s].mp[0] = segments[s].mp[0] / segments[s].count;
+      segments[s].mp[1] = segments[s].mp[1] / segments[s].count;
+      segments[s].mp[2] = segments[s].mp[2] / segments[s].count;
+      segments[s].edges = {};
+      // for (const k in segments) {
+      //   if (s !== k) {
+      //     segments[s].edges![k] = 1.0;
       //   }
       // }
     }
@@ -109,16 +105,16 @@ const Home: FC<Props> = () => {
       }),
       segments: {},
     });
-    console.log(result);
     renderSuperpixels(result);
   };
 
   const renderSuperpixels = (result: SLICResult) => {
-    console.log(result);
     const context = canvasOutput!.getContext();
     const imageData = context.createImageData(canvasOutput!.getWidth(), canvasOutput!.getHeight());
     const data = imageData.data;
     let seg;
+
+    console.log(data.length, imageData.width, imageData.height);
     for (let i = 0; i < result.indexMap.length; ++i) {
       seg = result.segments[result.indexMap[i]];
       data[4 * i + 3] = 255;
@@ -132,7 +128,6 @@ const Home: FC<Props> = () => {
         data[4 * i + 2] = 0;
       }
     }
-    console.log(data);
     context.putImageData(imageData, 0, 0);
   };
 

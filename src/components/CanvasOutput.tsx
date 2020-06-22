@@ -10,9 +10,6 @@ const CanvasOutput: FC<Props> = ({ canvas, imageURL }) => {
     if (!canvas) return;
     let { clientWidth, clientHeight } = document.querySelector(".canvas-card")!;
 
-    clientWidth = clientWidth;
-    clientHeight = clientHeight;
-
     canvas.setWidth(clientWidth);
     canvas.setHeight(clientHeight);
   }, [canvas]);

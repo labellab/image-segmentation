@@ -1,9 +1,6 @@
 export const setCanvasImage = ({ img, canvas }: { img: fabric.Image; canvas: fabric.Canvas }) => {
   let { clientWidth, clientHeight } = document.querySelector(".canvas-card")!;
 
-  clientWidth = clientWidth;
-  clientHeight = clientHeight;
-
   let drawWidth = 0;
   let drawHeight = 0;
 
