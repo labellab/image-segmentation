@@ -14,6 +14,7 @@ export const setCanvasImage = ({ img, canvas }: { img: fabric.Image; canvas: fab
 
   canvas.setWidth(clientWidth);
   canvas.setHeight(clientHeight);
+
   img.scaleToWidth(drawWidth);
   img.scaleToHeight(drawHeight);
 

@@ -358,7 +358,6 @@ function initializeKmeansCenters(
   w: number,
   h: number
 ) {
-  console.log(regionSize, numRegionsY, numRegionsX, w, h);
   let i = 0,
     j = 0,
     x,

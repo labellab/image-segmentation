@@ -12,6 +12,8 @@ const CanvasOutput: FC<Props> = ({ canvas, imageURL }) => {
 
     canvas.setWidth(clientWidth);
     canvas.setHeight(clientHeight);
+
+    canvas.getContext().scale(devicePixelRatio, devicePixelRatio);
   }, [canvas]);
 
   return (

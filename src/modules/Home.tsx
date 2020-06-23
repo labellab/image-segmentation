@@ -110,11 +110,12 @@ const Home: FC<Props> = () => {
 
   const renderSuperpixels = (result: SLICResult) => {
     const context = canvasOutput!.getContext();
+    // if (window.devicePixelRatio) {
+    //   context.scale(window.devicePixelRatio, window.devicePixelRatio);
+    // }
     const imageData = context.createImageData(canvasOutput!.getWidth(), canvasOutput!.getHeight());
     const data = imageData.data;
     let seg;
-
-    console.log(data.length, imageData.width, imageData.height);
     for (let i = 0; i < result.indexMap.length; ++i) {
       seg = result.segments[result.indexMap[i]];
       data[4 * i + 3] = 255;
@@ -128,6 +129,7 @@ const Home: FC<Props> = () => {
         data[4 * i + 2] = 0;
       }
     }
+
     context.putImageData(imageData, 0, 0);
   };
 
@@ -144,8 +146,12 @@ const Home: FC<Props> = () => {
   };
 
   useEffect(() => {
-    setCanvasInput(new fabric.Canvas("canvas-input", { selection: false }));
-    setCanvasOutput(new fabric.Canvas("canvas-output", { selection: false }));
+    setCanvasInput(
+      new fabric.Canvas("canvas-input", { selection: false, enableRetinaScaling: false })
+    );
+    setCanvasOutput(
+      new fabric.Canvas("canvas-output", { selection: false, enableRetinaScaling: false })
+    );
   }, []);
 
   return (
