@@ -88,8 +88,6 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
     currentCenters = new Float32Array(5 * numRegions),
     newCenters = new Float32Array(5 * numRegions),
     clusterParams = new Float32Array(2 * numRegions),
-    mcMap = new Float32Array(numPixels),
-    msMap = new Float32Array(numPixels),
     distanceMap = new Float32Array(numPixels),
     labData = xyz2lab(
       rgb2xyz(imageData.data, imageData.width, imageData.height),
@@ -118,8 +116,6 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
     assignSuperpixelLabel(
       labData,
       segmentation,
-      mcMap,
-      msMap,
       distanceMap,
       currentCenters,
       clusterParams,
@@ -153,9 +149,6 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
       currentCenters[j] = newCenters[j];
     }
   }
-  // const minRegionSize = (options.regionSize * options.regionSize) / 4;
-  const minRegionSize = 20;
-  eliminateSmallRegions(segmentation, minRegionSize, numPixels, imageData.width, imageData.height);
 
   // console.log(`
   //   图宽：${imageData.width}
@@ -167,29 +160,11 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
   // console.log(`labData`, labData);
   // console.log(`edgeMap`, edgeMap);
 
+  const minRegionSize = 20;
+  eliminateSmallRegions(segmentation, minRegionSize, numPixels, imageData.width, imageData.height);
+
   return segmentation;
 }
-
-// const updateClusterParams = (
-//   segmentation: Int32Array,
-//   mcMap: Float32Array,
-//   msMap: Float32Array,
-//   clusterParams: Float32Array
-// ) => {
-//   let mc = new Float32Array(clusterParams.length / 2),
-//     ms = new Float32Array(clusterParams.length / 2);
-//   for (let i = 0; i < segmentation.length; i++) {
-//     let region = segmentation[i];
-//     if (mc[region] < mcMap[region]) {
-//       mc[region] = mcMap[region];
-//       clusterParams[region * 2 + 0] = mcMap[region];
-//     }
-//     if (ms[region] < msMap[region]) {
-//       ms[region] = msMap[region];
-//       clusterParams[region * 2 + 1] = msMap[region];
-//     }
-//   }
-// };
 
 function eliminateSmallRegions(
   segmentation: Int32Array,
@@ -212,9 +187,7 @@ function eliminateSmallRegions(
     xp = 0,
     yp = 0,
     direction = 0;
-  for (pixel = 0; pixel < numPixels; pixel++) {
-    if (cleaned[pixel]) continue;
-  }
+
   for (pixel = 0; pixel < numPixels; pixel++) {
     if (cleaned[pixel]) continue;
     label = segmentation[pixel];
@@ -225,7 +198,7 @@ function eliminateSmallRegions(
     cleanedLabel = label + 1;
     cleaned[pixel] = label + 1;
     x = pixel % w;
-    y = Math.floor(pixel / w);
+    y = ~~(pixel / w);
     let neighbor = 0;
     for (direction = 0; direction < 4; direction++) {
       xp = x + dx[direction];
@@ -238,7 +211,7 @@ function eliminateSmallRegions(
     while (numExpanded < segmentSize) {
       const open = segment[numExpanded++];
       x = open % w;
-      y = Math.floor(open / w);
+      y = ~~(open / w);
       for (direction = 0; direction < 4; ++direction) {
         xp = x + dx[direction];
         yp = y + dy[direction];
@@ -301,8 +274,6 @@ function computeCenters(
 function assignSuperpixelLabel(
   labData: Float32Array,
   segmentation: Int32Array,
-  mcMap: Float32Array,
-  msMap: Float32Array,
   distanceMap: Float32Array,
   centers: Float32Array,
   clusterParams: Float32Array,
@@ -409,15 +380,4 @@ function computeEdge(labData: Float32Array, edgeMap: Float32Array, w: number, h:
       }
     }
   }
-}
-
-function remapLabels(segmentation: Int32Array) {
-  const map: { [label: number]: number } = {};
-  let index = 0;
-  for (var i = 0; i < segmentation.length; ++i) {
-    var label = segmentation[i];
-    if (map[label] === undefined) map[label] = index++;
-    segmentation[i] = map[label];
-  }
-  return index;
 }
