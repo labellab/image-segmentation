@@ -14,8 +14,6 @@ import slicAlgorithm from "../utils/SLICAlgorithm";
 
 type Props = {};
 type SLICResult = {
-  width: number;
-  height: number;
   indexMap: Int32Array;
   rgbData: Uint8Array;
   segments: {
@@ -55,7 +53,7 @@ const Home: FC<Props> = () => {
   };
 
   const callbackSegmentation = (res: SLICResult): SLICResult => {
-    const { indexMap, width, height, rgbData, segments } = res;
+    const { indexMap, rgbData, segments } = res;
 
     for (let i = 0; i < indexMap.length; i += 1) {
       const current = indexMap[i];
@@ -70,8 +68,6 @@ const Home: FC<Props> = () => {
         };
       }
 
-      const y = ~~(i / width),
-        x = i % width;
       segments[current].count += 1;
       segments[current].mp[0] += rgbData[4 * i];
       segments[current].mp[1] += rgbData[4 * i + 1];
@@ -100,9 +96,7 @@ const Home: FC<Props> = () => {
       .getImageData(0, 0, canvasInput!.getWidth(), canvasInput!.getHeight());
 
     const result = callbackSegmentation({
-      ...slicAlgorithm(data, {
-        regionSize: 30,
-      }),
+      ...slicAlgorithm(data, 30),
       segments: {},
     });
     renderSuperpixels(result);

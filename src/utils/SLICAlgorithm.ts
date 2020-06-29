@@ -1,28 +1,18 @@
 export default function (
   imageData: ImageData,
-  options: Options
+  regionSize: number
 ): {
-  width: number;
-  height: number;
   indexMap: Int32Array;
   rgbData: Uint8Array;
 } {
-  options.regionSize = ~~options.regionSize;
-
-  const segmentation = computeSLICSegmentation(imageData, options);
+  const segmentation = computeSLICSegmentation(imageData, ~~regionSize);
 
   var rgbData = new Uint8Array(imageData.data);
   return {
-    width: imageData.width,
-    height: imageData.height,
     indexMap: segmentation,
     rgbData: rgbData,
   };
 }
-
-type Options = {
-  regionSize: number;
-};
 
 /**
  * Convert RGBA into XYZ color space.
@@ -77,10 +67,10 @@ function xyz2lab(xyz: Float32Array, w: number, h: number) {
   return lab;
 }
 
-function computeSLICSegmentation(imageData: ImageData, options: Options): Int32Array {
+function computeSLICSegmentation(imageData: ImageData, regionSize: number): Int32Array {
   const { width, height } = imageData,
-    numRegionsX = ~~(width / options.regionSize),
-    numRegionsY = ~~(height / options.regionSize),
+    numRegionsX = ~~(width / regionSize),
+    numRegionsY = ~~(height / regionSize),
     numRegions = ~~(numRegionsX * numRegionsY),
     numPixels = ~~(width * height),
     edgeMap = new Float32Array(numPixels),
@@ -104,7 +94,7 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
     clusterParams,
     numRegionsX,
     numRegionsY,
-    options.regionSize,
+    regionSize,
     imageData.width,
     imageData.height
   );
@@ -121,11 +111,10 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
       clusterParams,
       numRegionsX,
       numRegionsY,
-      options.regionSize,
+      regionSize,
       imageData.width,
       imageData.height
     );
-    // updateClusterParams(segmentation, mcMap, msMap, clusterParams);
     let j = 0;
     for (j = 0; j < masses.length; j += 1) {
       masses[j] = 0;
@@ -149,16 +138,6 @@ function computeSLICSegmentation(imageData: ImageData, options: Options): Int32A
       currentCenters[j] = newCenters[j];
     }
   }
-
-  // console.log(`
-  //   图宽：${imageData.width}
-  //   图高：${imageData.height}
-  //   超像素大小 regionSize：${options.regionSize}
-  //   超像素区域数 numRegions：${numRegions}
-  //   总像素：${imageData.width * imageData.height}
-  // `);
-  // console.log(`labData`, labData);
-  // console.log(`edgeMap`, edgeMap);
 
   const minRegionSize = 20;
   eliminateSmallRegions(segmentation, minRegionSize, numPixels, imageData.width, imageData.height);
@@ -229,13 +208,10 @@ function eliminateSmallRegions(
         }
       }
     }
-
-    // Change label to cleanedLabel if the semgent is too small.
     if (segmentSize < minRegionSize) {
       while (segmentSize > 0) cleaned[segment[--segmentSize]] = cleanedLabel;
     }
   }
-  // Restore base 0 indexing of the regions.
   for (pixel = 0; pixel < numPixels; ++pixel) --cleaned[pixel];
   for (let i = 0; i < numPixels; ++i) segmentation[i] = cleaned[i];
 }
