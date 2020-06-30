@@ -273,9 +273,12 @@ function assignSuperpixelLabel(
           dA = labData[w * h + y * w + x] - centers[5 * region + 3],
           dB = labData[2 * w * h + y * w + x] - centers[5 * region + 4],
           appearance = dL * dL + dA * dA + dB * dB,
-          distance = Math.sqrt(
-            appearance / clusterParams[region * 2 + 0] + spatial / clusterParams[region * 2 + 1]
-          );
+          // distance = Math.sqrt(
+          //   appearance / clusterParams[region * 2 + 0] + spatial / clusterParams[region * 2 + 1]
+          // );
+          distance =
+            Math.sqrt(appearance) +
+            Math.sqrt(spatial) * (clusterParams[region * 2 + 0] / clusterParams[region * 2 + 1]);
         if (distance < distanceMap[y * w + x]) {
           distanceMap[y * w + x] = distance;
           segmentation[y * w + x] = region;
@@ -339,8 +342,8 @@ function initializeKmeansCenters(
       centers[i++] = labData[w * h + centery * w + centerx];
       centers[i++] = labData[2 * w * h + centery * w + centerx];
 
-      clusterParams[j++] = 10 * 10;
-      clusterParams[j++] = regionSize * regionSize;
+      clusterParams[j++] = 10;
+      clusterParams[j++] = regionSize;
     }
   }
 }
