@@ -10,13 +10,11 @@ const LayoutHeader: FC<Props> = () => {
   return (
     <Header className='header' id='header'>
       <div id='header-inner'>
-        <Link to='/'>
-          <div id='logo'>
-            <img src=' https://avatars3.githubusercontent.com/u/61448501?s=200&v=4' alt='logo' />
+        <div id='logo'>
+          <img src=' https://avatars3.githubusercontent.com/u/61448501?s=200&v=4' alt='logo' />
 
-            <span>Image Segmentation</span>
-          </div>
-        </Link>
+          <span>Image Segmentation</span>
+        </div>
       </div>
     </Header>
   );

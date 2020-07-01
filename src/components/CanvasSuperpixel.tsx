@@ -4,7 +4,7 @@ import { Card } from "antd";
 type Props = {
   canvas: fabric.Canvas | null;
 };
-const CanvasOutput: FC<Props> = ({ canvas }) => {
+const CanvasSuperpixel: FC<Props> = ({ canvas }) => {
   useEffect(() => {
     if (!canvas) return;
     let { clientWidth, clientHeight } = document.querySelector(".canvas-card")!;
@@ -22,4 +22,4 @@ const CanvasOutput: FC<Props> = ({ canvas }) => {
   );
 };
 
-export default CanvasOutput;
+export default CanvasSuperpixel;
