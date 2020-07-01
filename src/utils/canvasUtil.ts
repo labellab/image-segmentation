@@ -18,7 +18,7 @@ export const setCanvasImage = ({ img, canvas }: { img: fabric.Image; canvas: fab
   img.scaleToWidth(drawWidth);
   img.scaleToHeight(drawHeight);
 
-  // canvas.add(img);
-  canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+  canvas.add(img);
+  // canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
   canvas.renderAll();
 };

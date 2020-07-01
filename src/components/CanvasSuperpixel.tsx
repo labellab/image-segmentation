@@ -11,8 +11,6 @@ const CanvasSuperpixel: FC<Props> = ({ canvas }) => {
 
     canvas.setWidth(clientWidth);
     canvas.setHeight(clientHeight);
-
-    canvas.getContext().scale(devicePixelRatio, devicePixelRatio);
   }, [canvas]);
 
   return (

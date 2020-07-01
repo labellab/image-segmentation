@@ -11,13 +11,11 @@ const CanvasOutput: FC<Props> = ({ canvas }) => {
 
     canvas.setWidth(clientWidth);
     canvas.setHeight(clientHeight);
-
-    canvas.getContext().scale(devicePixelRatio, devicePixelRatio);
   }, [canvas]);
 
   return (
     <Card className='canvas-card'>
-      <canvas id='canvas-superpixel'></canvas>
+      <canvas id='canvas-output'></canvas>
     </Card>
   );
 };
