@@ -14,31 +14,15 @@ import slicAlgorithm from "./utils/SLICAlgorithm";
 import CanvasOutput from "./components/CanvasOutput";
 import LayoutHeader from "./components/LayoutHeader";
 
-type SLICResult = {
-  indexMap: Int32Array;
-  rgbData: Uint8Array;
-  segments: {
-    [pixel: number]: {
-      mask: any;
-      count: number;
-      mp: [number, number, number];
-      red: Uint32Array;
-      green: Uint32Array;
-      blue: Uint32Array;
-      edges?: {
-        [k: number]: number;
-      };
-    };
-  };
-};
-
+let inputData: ImageData | undefined;
+let maskData: ImageData | undefined;
 function App() {
   const [isDrawingMode, setIsDrawingMode] = useState(false);
+  const [imageURL, setImageURL] = useState("");
+
   const [canvasInput, setCanvasInput] = useState<fabric.Canvas | null>(null);
   const [canvasSuperpixel, setCanvasSuperpixel] = useState<fabric.Canvas | null>(null);
   const [canvasOutput, setCanvasOutput] = useState<fabric.Canvas | null>(null);
-
-  const [imageURL, setImageURL] = useState("");
 
   const uploadProps: UploadProps = {
     name: "file",
@@ -93,13 +77,53 @@ function App() {
     return { ...res, segments };
   };
 
-  const handleSegment = () => {
-    const data = canvasInput!
+  const handleExtract = () => {
+    if (!canvasInput) return;
+    canvasInput.forEachObject((obj) => {
+      if (!obj.isType("image")) {
+        obj.opacity = 0;
+      }
+    });
+    canvasInput.renderAll();
+
+    inputData = canvasInput
       .getContext()
-      .getImageData(0, 0, canvasInput!.getWidth(), canvasInput!.getHeight());
+      .getImageData(0, 0, canvasInput.getWidth(), canvasInput.getHeight());
+
+    canvasInput.forEachObject((obj) => {
+      if (!obj.isType("image")) {
+        obj.opacity = 1;
+      } else {
+        obj.opacity = 0;
+      }
+    });
+    canvasInput.renderAll();
+
+    maskData = canvasInput
+      .getContext()
+      .getImageData(0, 0, canvasInput.getWidth(), canvasInput.getHeight());
+
+    canvasInput.forEachObject((obj) => {
+      if (obj.isType("image")) {
+        obj.opacity = 1;
+      } else {
+        obj.opacity = 0.6;
+      }
+    });
+
+    canvasInput.renderAll();
+  };
+
+  const handleSegment = () => {
+    if (!canvasInput) return;
+
+    handleExtract();
+    // const data = canvasInput
+    //   .getContext()
+    //   .getImageData(0, 0, canvasInput.getWidth(), canvasInput.getHeight());
 
     const result = callbackSegmentation({
-      ...slicAlgorithm(data, 30),
+      ...slicAlgorithm(inputData!, 30),
       segments: {},
     });
     renderSuperpixels(result);
@@ -119,7 +143,7 @@ function App() {
     for (let i = 0; i < result.indexMap.length; ++i) {
       seg = result.segments[result.indexMap[i]];
       data[4 * i + 3] = 255;
-      if (result.indexMap[i] == result.indexMap[i + 1]) {
+      if (result.indexMap[i] === result.indexMap[i + 1]) {
         data[4 * i + 0] = seg.mp[0];
         data[4 * i + 1] = seg.mp[1];
         data[4 * i + 2] = seg.mp[2];
@@ -147,13 +171,22 @@ function App() {
 
   useEffect(() => {
     setCanvasInput(
-      new fabric.Canvas("canvas-input", { selection: false, enableRetinaScaling: false })
+      new fabric.Canvas("canvas-input", {
+        selection: false,
+        enableRetinaScaling: false,
+      })
     );
     setCanvasSuperpixel(
-      new fabric.Canvas("canvas-superpixel", { selection: false, enableRetinaScaling: false })
+      new fabric.Canvas("canvas-superpixel", {
+        selection: false,
+        enableRetinaScaling: false,
+      })
     );
     setCanvasOutput(
-      new fabric.Canvas("canvas-output", { selection: false, enableRetinaScaling: false })
+      new fabric.Canvas("canvas-output", {
+        selection: false,
+        enableRetinaScaling: false,
+      })
     );
   }, []);
 
@@ -162,7 +195,7 @@ function App() {
       <LayoutHeader />
       <Layout>
         <Layout.Content id='main'>
-          <div className='tools' style={styles.Tools}>
+          <div className='tools'>
             <Upload {...uploadProps}>
               <Button type='primary' ghost>
                 <FileImageOutlined /> Add image
@@ -206,10 +239,22 @@ function App() {
   );
 }
 
-const styles = {
-  Tools: {
-    marginBottom: 20,
-  },
+type SLICResult = {
+  indexMap: Int32Array;
+  rgbData: Uint8Array;
+  segments: {
+    [pixel: number]: {
+      mask: any;
+      count: number;
+      mp: [number, number, number];
+      red: Uint32Array;
+      green: Uint32Array;
+      blue: Uint32Array;
+      edges?: {
+        [k: number]: number;
+      };
+    };
+  };
 };
 
 export default App;

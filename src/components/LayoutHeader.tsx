@@ -1,6 +1,5 @@
 import React, { FC } from "react";
-import { Layout as AntLayout, Button } from "antd";
-import { Link } from "react-router-dom";
+import { Layout as AntLayout } from "antd";
 
 const { Header } = AntLayout;
 

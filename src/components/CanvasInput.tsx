@@ -49,7 +49,7 @@ const CanvasInput: FC<Props> = ({ canvas, imageURL, isDrawing }) => {
         draggingBg = false;
       });
     });
-  }, [imageURL]);
+  }, [imageURL, canvas]);
 
   return (
     <Card className='canvas-card'>

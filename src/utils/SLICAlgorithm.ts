@@ -294,7 +294,6 @@ function computeResidualError(prevCenters: Float32Array, currentCenters: Float32
     const d = prevCenters[i] - currentCenters[i];
     error += Math.sqrt(d * d);
   }
-  console.log(error);
   return error;
 }
 
