@@ -1,6 +1,6 @@
 # Image Segmentation
 
-This project perform image segmention in JavaScript using SLIC superpixels. Learn more about [SLIC Superpixels](https://www.iro.umontreal.ca/~mignotte/IFT6150/Articles/SLIC_Superpixels.pdf).
+This project performs image segmention in JavaScript using SLIC superpixels. Learn more about [SLIC Superpixels](https://www.iro.umontreal.ca/~mignotte/IFT6150/Articles/SLIC_Superpixels.pdf).
 
 ![](intro.jpg)
 
@@ -41,4 +41,4 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Contributors
 
-(coming soon..)
+(Coming soon..)
