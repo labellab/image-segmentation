@@ -9,6 +9,7 @@ import {
   ArrowRightOutlined,
   EditOutlined,
   CloseOutlined,
+  UndoOutlined,
 } from "@ant-design/icons";
 import slicAlgorithm from "./utils/SLICAlgorithm";
 import CanvasOutput from "./components/CanvasOutput";
@@ -16,6 +17,7 @@ import LayoutHeader from "./components/LayoutHeader";
 
 let inputData: ImageData | undefined;
 let maskData: ImageData | undefined;
+let undoStack: fabric.Object[] | undefined;
 
 function App() {
   const [isDrawingMode, setIsDrawingMode] = useState(false);
@@ -219,6 +221,8 @@ function App() {
     setIsDrawingMode(false);
   };
 
+  const handleUndo = () => {};
+
   useEffect(() => {
     setCanvasInput(
       new fabric.Canvas("canvas-input", {
@@ -274,6 +278,10 @@ function App() {
               </Button>,
               <Divider type='vertical' />,
             ]}
+            <Button onClick={handleUndo}>
+              <UndoOutlined /> Undo
+            </Button>
+            <Divider type='vertical' />,
             <Button type='primary' ghost onClick={handleSegment}>
               <ArrowRightOutlined /> Segment
             </Button>
