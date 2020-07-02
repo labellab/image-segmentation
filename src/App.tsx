@@ -61,9 +61,6 @@ function App() {
             mixed: false,
             unknown: false,
           },
-          // red: new Uint32Array(256),
-          // green: new Uint32Array(256),
-          // blue: new Uint32Array(256),
         };
       }
 
@@ -71,20 +68,11 @@ function App() {
       segments[current].mp[0] += rgbData[4 * i];
       segments[current].mp[1] += rgbData[4 * i + 1];
       segments[current].mp[2] += rgbData[4 * i + 2];
-      // segments[current].red[rgbData[4 * i]] += 1;
-      // segments[current].green[rgbData[4 * i + 1]] += 1;
-      // segments[current].blue[rgbData[4 * i + 2]] += 1;
     }
     for (const s in segments) {
       segments[s].mp[0] = segments[s].mp[0] / segments[s].count;
       segments[s].mp[1] = segments[s].mp[1] / segments[s].count;
       segments[s].mp[2] = segments[s].mp[2] / segments[s].count;
-      segments[s].edges = {};
-      // for (const k in segments) {
-      //   if (s !== k) {
-      //     segments[s].edges![k] = 1.0;
-      //   }
-      // }
     }
     return { ...res, segments };
   };
@@ -142,9 +130,6 @@ function App() {
   const renderSuperpixels = (result: SLICResult) => {
     const { indexMap } = result;
     const context = canvasSuperpixel!.getContext();
-    // if (window.devicePixelRatio) {
-    //   context.scale(window.devicePixelRatio, window.devicePixelRatio);
-    // }
     const imageData = context.createImageData(
       canvasSuperpixel!.getWidth(),
       canvasSuperpixel!.getHeight()
@@ -314,12 +299,6 @@ type SLICResult = {
       };
       count: number;
       mp: [number, number, number]; // RGB
-      // red: Uint32Array;
-      // green: Uint32Array;
-      // blue: Uint32Array;
-      edges?: {
-        [k: number]: number;
-      };
     };
   };
 };
