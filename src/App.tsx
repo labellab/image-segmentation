@@ -263,10 +263,10 @@ function App() {
               </Button>,
               <Divider type='vertical' />,
             ]}
-            <Button onClick={handleUndo}>
+            <Button onClick={handleUndo} disabled>
               <UndoOutlined /> Undo
             </Button>
-            <Divider type='vertical' />,
+            <Divider type='vertical' />
             <Button type='primary' ghost onClick={handleSegment}>
               <ArrowRightOutlined /> Segment
             </Button>
