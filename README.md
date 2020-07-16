@@ -5,17 +5,10 @@ This project performs image segmention in JavaScript using SLIC superpixels. Lea
 ![](images/intro.jpg)
 
 
-
-![](images/sp-1.jpg)
+<!-- ![](images/sp-1.jpg)
 ![](images/sp-2.jpg)
-![](images/sp-3.jpg)
-![](images/sp-4.jpg)
-![](images/sp-5.jpg)
-![](images/sp-6.jpg)
-![](images/sp-7.jpg)
-![](images/sp-8.jpg)
-![](images/sp-9.jpg)
-![](images/sp-10.jpg)
+...
+![](images/sp-10.jpg) -->
 
 
 ## How to develop locally?
