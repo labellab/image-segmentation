@@ -2,7 +2,21 @@
 
 This project performs image segmention in JavaScript using SLIC superpixels. Learn more about [SLIC Superpixels](https://www.iro.umontreal.ca/~mignotte/IFT6150/Articles/SLIC_Superpixels.pdf).
 
-![](intro.jpg)
+![](images/intro.jpg)
+
+
+
+![](images/sp-1.jpg)
+![](images/sp-2.jpg)
+![](images/sp-3.jpg)
+![](images/sp-4.jpg)
+![](images/sp-5.jpg)
+![](images/sp-6.jpg)
+![](images/sp-7.jpg)
+![](images/sp-8.jpg)
+![](images/sp-9.jpg)
+![](images/sp-10.jpg)
+
 
 ## How to develop locally?
 
@@ -16,11 +30,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
 ### `yarn build`
 
 Builds the app for production to the `build` folder.<br />
@@ -30,15 +39,3 @@ The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-## How to contribute?
-
-(coming soon..)
-
-## Roadmap
-
-(coming soon..)
-
-## Contributors
-
-(Coming soon..)
